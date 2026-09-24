@@ -60,6 +60,7 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASSWORD: guest
+      GEO_CATALOG_SERVICE_BASE_URL: http://geo-catalog-service:8082
       TZ: America/Santiago
     ports:
       - "8081:8081"
@@ -67,6 +68,8 @@ services:
       postgres:
         condition: service_healthy
       rabbitmq:
+        condition: service_healthy
+      geo-catalog-service:
         condition: service_healthy
 
   geo-catalog-service:
@@ -83,6 +86,12 @@ services:
     depends_on:
       postgres-geo:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://localhost:8082/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
 
 volumes:
   postgres-data:

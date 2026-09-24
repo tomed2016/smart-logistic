@@ -126,30 +126,27 @@ GET /api/v1/dias-habiles/siguiente?desde=  Calcular el siguiente día hábil des
 solo lectura cuyo único mecanismo de cambio es una migración Flyway (deploy), no una
 acción de usuario. No hay invariantes transaccionales que proteger con eventos.
 
-## 10. Decisión diferida: integración con `customer-service`
-`customer-service` mantiene su propio `InMemoryComunaCatalogAdapter` (una lista
-simplificada de comunas embebida en código, de la Iteración 1) y **no se migra** en
-esta iteración a consumir `geo-catalog-service` vía HTTP. Se documenta como
-*technical debt* explícito, no como omisión accidental:
-- Migrarlo requiere decidir el patrón de integración (llamada síncrona con caché
-  local + circuit breaker, vs. sincronización asíncrona de una copia de solo lectura)
-  — decisión que amerita su propia iteración/ADR en vez de resolverse de paso aquí.
-- El catálogo simplificado actual de `customer-service` sigue siendo funcionalmente
-  correcto para las comunas que ya soporta; no bloquea el desarrollo de siguientes
-  iteraciones (Productos, Pedidos).
-- **Seguimiento**: se debe crear un ADR dedicado antes de la iteración de
-  Planificación Logística (que sí necesitará el catálogo completo de 346 comunas con
-  coordenadas para zonificación), momento en el que la integración deja de ser
-  opcional.
+## 10. Integración con `customer-service`
+La decisión diferida de esta sección fue resuelta en la integración posterior
+documentada en [ADR 05](05-integracion-clientes-catalogo-geografico.md).
+`customer-service` utiliza por defecto un adaptador HTTP hacia este servicio,
+protegido por caché Caffeine, retry y circuit breaker de Resilience4j. El adaptador
+en memoria de la Iteración 1 queda disponible únicamente bajo el perfil explícito
+`local` para desarrollo offline.
+
+La integración conserva la separación entre bounded contexts: Clientes mantiene su
+modelo de dirección y su persistencia, mientras Catálogo Geográfico sigue siendo
+la fuente de verdad de regiones, provincias y comunas. Los códigos de comuna
+intercambiados por el adaptador HTTP son códigos INE numéricos representados como
+`String` en el modelo de Clientes.
 
 ## 11. Coexistencia de dos conceptos "Región" (no unificados)
 `customer-service.domain.model.Region` es un **enum cerrado** (ej.
 `METROPOLITANA_DE_SANTIAGO`) definido para las necesidades acotadas de ese bounded
 context en la Iteración 1. `geo-catalog-service.domain.model.Region` es un **record**
 identificado por código INE, que representa el catálogo oficial completo. Son
-conceptos deliberadamente independientes en este momento del proyecto (Iteración 2):
-unificarlos prematuramente acoplaría Clientes a un servicio externo antes de
-resolver el punto 9. Se revisita junto con esa decisión diferida.
+conceptos deliberadamente independientes. El adaptador HTTP realiza una traducción
+explícita desde el código INE hacia el enum local, sin basarse en el ordinal del enum.
 
 ## 12. Fuera de alcance en esta iteración
 - Persistencia o versionado histórico de cambios en la división político-administrativa
