@@ -1,0 +1,92 @@
+<div class="pagina">
+  <div class="pagina__encabezado">
+    <h1>Clientes</h1>
+    <a mat-flat-button color="primary" routerLink="/clientes/nuevo">
+      <mat-icon>add</mat-icon>
+      Nuevo cliente
+    </a>
+  </div>
+
+  <form class="filtros" (ngSubmit)="aplicarFiltros()">
+    <mat-form-field appearance="outline" class="filtros__campo">
+      <mat-label>Código de comuna</mat-label>
+      <input matInput [formControl]="filtroComuna" placeholder="Ej: 13119" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filtros__campo">
+      <mat-label>Estado</mat-label>
+      <mat-select [formControl]="filtroEstado">
+        <mat-option value="">Todos</mat-option>
+        @for (estado of opcionesEstado; track estado) {
+          <mat-option [value]="estado">{{ etiquetasEstado[estado] }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-stroked-button type="submit">
+      <mat-icon>search</mat-icon>
+      Filtrar
+    </button>
+  </form>
+
+  @if (mensajeError()) {
+    <p class="mensaje-error" role="alert">{{ mensajeError() }}</p>
+  }
+
+  @if (cargando()) {
+    <div class="cargando">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else {
+    <table mat-table [dataSource]="clientes()" class="tabla">
+      <ng-container matColumnDef="rut">
+        <th mat-header-cell *matHeaderCellDef>RUT</th>
+        <td mat-cell *matCellDef="let cliente">{{ cliente.rut }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let cliente">{{ cliente.nombre }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="tipoCliente">
+        <th mat-header-cell *matHeaderCellDef>Tipo</th>
+        <td mat-cell *matCellDef="let cliente">{{ etiquetaTipo(cliente) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="condicionPago">
+        <th mat-header-cell *matHeaderCellDef>Condición de pago</th>
+        <td mat-cell *matCellDef="let cliente">{{ cliente.condicionPago | enumALegible }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="prioridadComercial">
+        <th mat-header-cell *matHeaderCellDef>Prioridad</th>
+        <td mat-cell *matCellDef="let cliente">{{ cliente.prioridadComercial | enumALegible }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let cliente">
+          <span class="estado" [class.estado--inactivo]="cliente.estado === 'INACTIVO'">
+            {{ etiquetaEstado(cliente) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let cliente; columns: columnas" (click)="irADetalle(cliente)" class="fila-clickeable"></tr>
+    </table>
+
+    @if (clientes().length === 0) {
+      <p class="sin-resultados">No se encontraron clientes con los filtros aplicados.</p>
+    }
+
+    <mat-paginator
+      [length]="totalElementos()"
+      [pageIndex]="pagina()"
+      [pageSize]="tamanoPagina()"
+      [pageSizeOptions]="[10, 20, 50]"
+      (page)="cambiarPagina($event)"
+    />
+  }
+</div>

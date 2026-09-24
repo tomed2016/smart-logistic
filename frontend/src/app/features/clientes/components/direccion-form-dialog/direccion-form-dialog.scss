@@ -1,0 +1,16 @@
+.contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 360px;
+  padding-top: 0.5rem;
+}
+
+.fila-doble {
+  display: flex;
+  gap: 1rem;
+
+  mat-form-field {
+    flex: 1;
+  }
+}

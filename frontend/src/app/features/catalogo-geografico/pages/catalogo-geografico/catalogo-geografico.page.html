@@ -1,0 +1,73 @@
+<div class="pagina">
+  <h1>Catálogo Geográfico</h1>
+  <p class="subtitulo">Regiones, provincias, comunas y días hábiles de Chile (zona horaria America/Santiago).</p>
+
+  @if (mensajeError()) {
+    <p class="mensaje-error" role="alert">{{ mensajeError() }}</p>
+  }
+
+  <section class="seccion">
+    <h2>Comunas por región</h2>
+    <div class="selector">
+      <mat-form-field appearance="outline" class="selector__campo">
+        <mat-label>Región</mat-label>
+        <mat-select [formControl]="regionSeleccionada" (selectionChange)="seleccionarRegion()">
+          @for (region of regiones(); track region.codigo) {
+            <mat-option [value]="region.codigo">{{ region.nombre }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      @if (cargandoRegiones()) {
+        <mat-spinner diameter="24" />
+      }
+    </div>
+
+    @if (cargandoComunas()) {
+      <div class="cargando">
+        <mat-spinner diameter="32" />
+      </div>
+    } @else if (comunas().length > 0) {
+      <table mat-table [dataSource]="comunas()" class="tabla">
+        <ng-container matColumnDef="codigo">
+          <th mat-header-cell *matHeaderCellDef>Código</th>
+          <td mat-cell *matCellDef="let comuna">{{ comuna.codigo }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>Comuna</th>
+          <td mat-cell *matCellDef="let comuna">{{ comuna.nombre }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnasComunas"></tr>
+        <tr mat-row *matRowDef="let comuna; columns: columnasComunas"></tr>
+      </table>
+    } @else {
+      <p class="sin-resultados">Seleccione una región para ver sus comunas.</p>
+    }
+  </section>
+
+  <section class="seccion">
+    <h2>Verificar día hábil</h2>
+    <form class="verificador" (ngSubmit)="verificarDiaHabil()">
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha</mat-label>
+        <input matInput [matDatepicker]="selectorFecha" [formControl]="fechaAVerificar" />
+        <mat-datepicker-toggle matIconSuffix [for]="selectorFecha" />
+        <mat-datepicker #selectorFecha />
+      </mat-form-field>
+
+      <button mat-stroked-button type="submit" [disabled]="verificandoDiaHabil()">
+        <mat-icon>event_available</mat-icon>
+        Verificar
+      </button>
+    </form>
+
+    @if (verificandoDiaHabil()) {
+      <mat-spinner diameter="24" />
+    } @else if (resultadoDiaHabil(); as resultado) {
+      <p class="resultado" [class.resultado--no-habil]="!resultado.esDiaHabil">
+        {{ resultado.fecha }}: {{ resultado.esDiaHabil ? 'Es día hábil' : 'No es día hábil (feriado o fin de semana)' }}
+      </p>
+    }
+  </section>
+</div>

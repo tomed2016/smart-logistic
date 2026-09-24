@@ -50,6 +50,61 @@ Detalle completo (prerequisitos, escenarios cubiertos, reportes) en
 capa dentro de la estrategia global de pruebas esta en
 [`docs/architecture/06-estrategia-de-pruebas.md`](docs/architecture/06-estrategia-de-pruebas.md).
 
+## Frontend (Angular)
+
+El modulo `frontend/` es una aplicacion Angular 22 (standalone components,
+signals, Angular Material) que consume `customer-service` (Clientes) y
+`geo-catalog-service` (Catalogo Geografico). Incluye listado/creacion/detalle
+de clientes, gestion de direcciones (dialogo con autocompletado de comunas) y
+un explorador del catalogo geografico con verificador de dia habil.
+
+### Desarrollo local
+
+Requiere Node.js 20+ y que `customer-service`/`geo-catalog-service` esten
+corriendo en `localhost:8081`/`localhost:8082` (ver seccion "Development
+quickstart" mas abajo).
+
+```powershell
+cd frontend
+npm install
+npx ng serve
+```
+
+La app queda disponible en `http://localhost:4200/`, con recarga en caliente.
+
+### Pruebas unitarias
+
+```powershell
+cd frontend
+npx ng test --watch=false
+```
+
+### Build de produccion
+
+```powershell
+cd frontend
+npx ng build
+```
+
+El resultado queda en `dist/frontend/browser/`.
+
+### Docker / Docker Compose
+
+El `Dockerfile` construye la app (`node:22-alpine`) y la sirve con
+`nginx:1.27-alpine`, que ademas actua como reverse proxy hacia
+`customer-service` y `geo-catalog-service` bajo `/api/v1/...` (usando
+resolucion DNS diferida de Docker para tolerar el orden de arranque de los
+contenedores).
+
+Para levantar el stack completo (frontend + backends + Postgres + RabbitMQ):
+
+```powershell
+docker compose -f infra\docker-compose.yml up -d --build
+```
+
+La app queda disponible en `http://localhost:4200/` (puerto configurable con
+la variable de entorno `FRONTEND_PORT`).
+
 ## Development quickstart
 
 Two common ways to run services locally:

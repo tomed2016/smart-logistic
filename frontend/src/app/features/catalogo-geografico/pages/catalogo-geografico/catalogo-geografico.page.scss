@@ -1,0 +1,61 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 720px;
+}
+
+.subtitulo {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.selector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  &__campo {
+    width: 320px;
+  }
+}
+
+.tabla {
+  width: 100%;
+}
+
+.cargando {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.verificador {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.resultado {
+  font-weight: 600;
+  color: #2e7d32;
+
+  &--no-habil {
+    color: #c62828;
+  }
+}
+
+.mensaje-error {
+  color: #c62828;
+  font-weight: 500;
+}
+
+.sin-resultados {
+  padding: 1rem 0;
+  color: rgba(0, 0, 0, 0.6);
+}

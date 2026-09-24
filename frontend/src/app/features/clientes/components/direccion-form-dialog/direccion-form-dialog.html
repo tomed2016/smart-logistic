@@ -1,0 +1,54 @@
+<h2 mat-dialog-title>Agregar dirección</h2>
+
+<form [formGroup]="formulario" (ngSubmit)="confirmar()">
+  <div mat-dialog-content class="contenido">
+    <mat-form-field appearance="outline">
+      <mat-label>Calle</mat-label>
+      <input matInput formControlName="calle" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Número</mat-label>
+      <input matInput formControlName="numero" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Comuna</mat-label>
+      <input matInput formControlName="comunaTexto" [matAutocomplete]="autoComuna" placeholder="Escriba para buscar" />
+      <mat-autocomplete #autoComuna="matAutocomplete">
+        @for (comuna of comunasSugeridas(); track comuna.codigo) {
+          <mat-option [value]="comuna.nombre" (onSelectionChange)="seleccionarComuna(comuna)">
+            {{ comuna.nombre }}
+          </mat-option>
+        }
+      </mat-autocomplete>
+      @if (formulario.controls.comunaTexto.touched && !comunaSeleccionada()) {
+        <mat-error>Seleccione una comuna de la lista.</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="fila-doble">
+      <mat-form-field appearance="outline">
+        <mat-label>Latitud</mat-label>
+        <input matInput type="number" formControlName="latitud" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Longitud</mat-label>
+        <input matInput type="number" formControlName="longitud" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Referencia (opcional)</mat-label>
+      <input matInput formControlName="referencia" />
+    </mat-form-field>
+
+    <mat-checkbox formControlName="marcarComoPrincipal">Marcar como dirección principal</mat-checkbox>
+  </div>
+
+  <div mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+    <button mat-flat-button color="primary" type="submit">Agregar</button>
+  </div>
+</form>

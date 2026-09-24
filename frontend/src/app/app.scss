@@ -1,0 +1,43 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  &__marca {
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  &__spacer {
+    flex: 1 1 auto;
+  }
+
+  &__subtitulo {
+    font-size: 0.85rem;
+    opacity: 0.85;
+  }
+}
+
+.contenedor {
+  flex: 1 1 auto;
+}
+
+.menu {
+  width: 240px;
+}
+
+.contenido {
+  padding: 1.5rem;
+}
+
+::ng-deep a.activo {
+  background-color: rgba(0, 0, 0, 0.06);
+  font-weight: 600;
+}

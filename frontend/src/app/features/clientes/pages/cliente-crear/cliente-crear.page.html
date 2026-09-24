@@ -1,0 +1,107 @@
+<div class="pagina">
+  <div class="pagina__encabezado">
+    <h1>Nuevo cliente</h1>
+    <a mat-stroked-button routerLink="/clientes">
+      <mat-icon>arrow_back</mat-icon>
+      Volver al listado
+    </a>
+  </div>
+
+  @if (mensajeError()) {
+    <p class="mensaje-error" role="alert">{{ mensajeError() }}</p>
+  }
+
+  <form [formGroup]="formulario" (ngSubmit)="guardar()" class="formulario">
+    <mat-form-field appearance="outline">
+      <mat-label>RUT</mat-label>
+      <input matInput formControlName="rut" placeholder="12.345.678-5" />
+      @if (formulario.controls.rut.hasError('required') && formulario.controls.rut.touched) {
+        <mat-error>El RUT es obligatorio.</mat-error>
+      }
+      @if (formulario.controls.rut.hasError('rutInvalido') && formulario.controls.rut.touched) {
+        <mat-error>El RUT ingresado no es válido.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="nombre" />
+      @if (formulario.controls.nombre.hasError('required') && formulario.controls.nombre.touched) {
+        <mat-error>El nombre es obligatorio.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Tipo de cliente</mat-label>
+      <mat-select formControlName="tipoCliente">
+        @for (opcion of opcionesTipo; track opcion) {
+          <mat-option [value]="opcion">{{ etiquetasTipo[opcion] }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Condición de pago</mat-label>
+      <mat-select formControlName="condicionPago">
+        @for (opcion of opcionesCondicionPago; track opcion) {
+          <mat-option [value]="opcion">{{ etiquetasCondicionPago[opcion] }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Prioridad comercial</mat-label>
+      <mat-select formControlName="prioridadComercial">
+        @for (opcion of opcionesPrioridad; track opcion) {
+          <mat-option [value]="opcion">{{ etiquetasPrioridad[opcion] }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Teléfonos</mat-label>
+      <mat-chip-grid #gridTelefonos>
+        @for (telefono of telefonos(); track telefono) {
+          <mat-chip-row (removed)="quitarTelefono(telefono)">
+            {{ telefono }}
+            <button matChipRemove><mat-icon>cancel</mat-icon></button>
+          </mat-chip-row>
+        }
+      </mat-chip-grid>
+      <input
+        placeholder="Agregar teléfono y presionar Enter"
+        [matChipInputFor]="gridTelefonos"
+        [matChipInputSeparatorKeyCodes]="[13]"
+        (matChipInputTokenEnd)="agregarTelefono($event)"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Correos</mat-label>
+      <mat-chip-grid #gridCorreos>
+        @for (correo of correos(); track correo) {
+          <mat-chip-row (removed)="quitarCorreo(correo)">
+            {{ correo }}
+            <button matChipRemove><mat-icon>cancel</mat-icon></button>
+          </mat-chip-row>
+        }
+      </mat-chip-grid>
+      <input
+        placeholder="Agregar correo y presionar Enter"
+        [matChipInputFor]="gridCorreos"
+        [matChipInputSeparatorKeyCodes]="[13]"
+        (matChipInputTokenEnd)="agregarCorreo($event)"
+      />
+    </mat-form-field>
+
+    <div class="formulario__acciones">
+      <button mat-flat-button color="primary" type="submit" [disabled]="guardando()">
+        @if (guardando()) {
+          <mat-spinner diameter="20" />
+        } @else {
+          Guardar cliente
+        }
+      </button>
+    </div>
+  </form>
+</div>

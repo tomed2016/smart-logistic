@@ -1,0 +1,65 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 720px;
+}
+
+.subtitulo {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.estado--inactivo {
+  color: #c62828;
+  font-weight: 600;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &__acciones {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+  }
+}
+
+.direcciones {
+  margin-top: 1rem;
+
+  &__encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.direccion--principal {
+  font-weight: 600;
+}
+
+.icono-principal {
+  font-size: 1rem;
+  height: 1rem;
+  width: 1rem;
+  vertical-align: middle;
+  color: #f9a825;
+}
+
+.cargando {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.mensaje-error {
+  color: #c62828;
+  font-weight: 500;
+}
+
+.sin-resultados {
+  padding: 1rem 0;
+  color: rgba(0, 0, 0, 0.6);
+}

@@ -1,0 +1,132 @@
+<div class="pagina">
+  <div class="pagina__encabezado">
+    <a mat-stroked-button routerLink="/clientes">
+      <mat-icon>arrow_back</mat-icon>
+      Volver al listado
+    </a>
+  </div>
+
+  @if (mensajeError()) {
+    <p class="mensaje-error" role="alert">{{ mensajeError() }}</p>
+  }
+
+  @if (cargando()) {
+    <div class="cargando">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (cliente(); as cliente) {
+    <h1>{{ cliente.nombre }}</h1>
+    <p class="subtitulo">
+      RUT {{ cliente.rut }} · {{ etiquetasTipo[cliente.tipoCliente] }} ·
+      <span [class.estado--inactivo]="cliente.estado === 'INACTIVO'">{{ etiquetasEstado[cliente.estado] }}</span>
+    </p>
+
+    <form [formGroup]="formulario" (ngSubmit)="guardarCambios()" class="formulario">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Condición de pago</mat-label>
+        <mat-select formControlName="condicionPago">
+          @for (opcion of opcionesCondicionPago; track opcion) {
+            <mat-option [value]="opcion">{{ etiquetasCondicionPago[opcion] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Prioridad comercial</mat-label>
+        <mat-select formControlName="prioridadComercial">
+          @for (opcion of opcionesPrioridad; track opcion) {
+            <mat-option [value]="opcion">{{ etiquetasPrioridad[opcion] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Teléfonos</mat-label>
+        <mat-chip-grid #gridTelefonos>
+          @for (telefono of telefonos(); track telefono) {
+            <mat-chip-row (removed)="quitarTelefono(telefono)">
+              {{ telefono }}
+              <button matChipRemove><mat-icon>cancel</mat-icon></button>
+            </mat-chip-row>
+          }
+        </mat-chip-grid>
+        <input
+          placeholder="Agregar teléfono y presionar Enter"
+          [matChipInputFor]="gridTelefonos"
+          [matChipInputSeparatorKeyCodes]="[13]"
+          (matChipInputTokenEnd)="agregarTelefono($event)"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Correos</mat-label>
+        <mat-chip-grid #gridCorreos>
+          @for (correo of correos(); track correo) {
+            <mat-chip-row (removed)="quitarCorreo(correo)">
+              {{ correo }}
+              <button matChipRemove><mat-icon>cancel</mat-icon></button>
+            </mat-chip-row>
+          }
+        </mat-chip-grid>
+        <input
+          placeholder="Agregar correo y presionar Enter"
+          [matChipInputFor]="gridCorreos"
+          [matChipInputSeparatorKeyCodes]="[13]"
+          (matChipInputTokenEnd)="agregarCorreo($event)"
+        />
+      </mat-form-field>
+
+      <div class="formulario__acciones">
+        <button mat-stroked-button color="warn" type="button" (click)="desactivar()" [disabled]="cliente.estado === 'INACTIVO'">
+          <mat-icon>block</mat-icon>
+          Desactivar cliente
+        </button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="guardando()">
+          @if (guardando()) {
+            <mat-spinner diameter="20" />
+          } @else {
+            Guardar cambios
+          }
+        </button>
+      </div>
+    </form>
+
+    <section class="direcciones">
+      <div class="direcciones__encabezado">
+        <h2>Direcciones</h2>
+        <button mat-stroked-button type="button" (click)="abrirDialogoDireccion()">
+          <mat-icon>add_location_alt</mat-icon>
+          Agregar dirección
+        </button>
+      </div>
+
+      @if (cliente.direcciones.length === 0) {
+        <p class="sin-resultados">Este cliente no tiene direcciones registradas.</p>
+      } @else {
+        <mat-list>
+          @for (direccion of cliente.direcciones; track direccion.id) {
+            <mat-list-item [class.direccion--principal]="direccion.esPrincipal">
+              <span matListItemTitle>
+                {{ direccion.calle }} {{ direccion.numero }}
+                @if (direccion.esPrincipal) {
+                  <mat-icon class="icono-principal" title="Dirección principal">star</mat-icon>
+                }
+              </span>
+              <span matListItemLine>
+                {{ direccion.comunaNombre }} · {{ direccion.region | enumALegible }}
+              </span>
+              @if (direccion.referencia) {
+                <span matListItemLine>{{ direccion.referencia }}</span>
+              }
+            </mat-list-item>
+          }
+        </mat-list>
+      }
+    </section>
+  }
+</div>
