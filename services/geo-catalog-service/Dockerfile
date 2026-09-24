@@ -18,5 +18,5 @@ WORKDIR /app
 RUN useradd --system --create-home appuser
 COPY --from=build /workspace/services/geo-catalog-service/target/geo-catalog-service.jar app.jar
 USER appuser
-EXPOSE 8082
+EXPOSE 9082
 ENTRYPOINT ["java", "-jar", "app.jar"]

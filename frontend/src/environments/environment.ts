@@ -5,6 +5,6 @@
  */
 export const environment = {
   production: false,
-  customerServiceBaseUrl: 'http://localhost:8081',
-  geoCatalogServiceBaseUrl: 'http://localhost:8082'
+  customerServiceBaseUrl: 'http://localhost:9081',
+  geoCatalogServiceBaseUrl: 'http://localhost:9082'
 };

@@ -38,7 +38,7 @@ pruebas `*IT` basadas en Testcontainers de `customer-service` y
 1. Docker Desktop en ejecución.
 2. El stack de la plataforma levantado. Dos formas de hacerlo:
 
-   **Opción A — puertos por defecto** (si no tienes otra cosa usando 5432/8081/8082):
+   **Opción A — puertos por defecto** (si no tienes otra cosa usando 5432/9081/9082):
 
    ```powershell
    cd infra
@@ -64,7 +64,7 @@ pruebas `*IT` basadas en Testcontainers de `customer-service` y
 
 ## Ejecutar la suite
 
-Con los puertos por defecto (8081/8082), no se necesita configuración adicional:
+Con los puertos por defecto (9081/9082), no se necesita configuración adicional:
 
 ```powershell
 mvn -f qa-automation/pom.xml verify
@@ -101,7 +101,7 @@ mvn -f qa-automation/pom.xml verify
 qa-automation/
   pom.xml
   src/test/resources/
-    application.yml                 URLs base por defecto (localhost:8081 / :8082)
+    application.yml                 URLs base por defecto (localhost:9081 / :9082)
     features/
       gestion_clientes.feature      Alta, consulta, actualización, desactivación,
                                      direcciones, RUT duplicado

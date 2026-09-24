@@ -37,8 +37,8 @@
             -Dcustomer.service.base-url=... / -Dgeo.catalog.service.base-url=...
             (por ejemplo para apuntar al stack aislado del smoke test).
         -->
-        <customer.service.base-url>http://localhost:8081</customer.service.base-url>
-        <geo.catalog.service.base-url>http://localhost:8082</geo.catalog.service.base-url>
+        <customer.service.base-url>http://localhost:9081</customer.service.base-url>
+        <geo.catalog.service.base-url>http://localhost:9082</geo.catalog.service.base-url>
     </properties>
 
     <dependencyManagement>

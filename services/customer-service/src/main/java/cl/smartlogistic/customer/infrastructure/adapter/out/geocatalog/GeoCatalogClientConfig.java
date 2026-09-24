@@ -47,7 +47,7 @@ public class GeoCatalogClientConfig {
 
         public GeoCatalogServiceProperties {
             if (baseUrl == null || baseUrl.isBlank()) {
-                baseUrl = "http://localhost:8082";
+                baseUrl = "http://localhost:9082";
             }
             if (connectTimeout == null) {
                 connectTimeout = Duration.ofSeconds(2);

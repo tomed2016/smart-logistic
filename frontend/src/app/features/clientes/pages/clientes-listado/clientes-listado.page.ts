@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,8 +11,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { Router, RouterLink } from '@angular/router';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { ErrorAplicacion } from '../../../../core/models/error-api.model';
 import { EnumALegiblePipe } from '../../../../shared/pipes/enum-a-legible.pipe';
+import { Comuna } from '../../../catalogo-geografico/models/geo.model';
+import { GeoCatalogService } from '../../../catalogo-geografico/services/geo-catalog.service';
 import { Cliente, ETIQUETAS_ESTADO_CLIENTE, ETIQUETAS_TIPO_CLIENTE, EstadoCliente } from '../../models/cliente.model';
 import { ClienteService } from '../../services/cliente.service';
 
@@ -28,6 +32,7 @@ import { ClienteService } from '../../services/cliente.service';
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
+    MatAutocompleteModule,
     MatSelectModule,
     MatProgressSpinnerModule,
     EnumALegiblePipe
@@ -37,6 +42,7 @@ import { ClienteService } from '../../services/cliente.service';
 })
 export class ClientesListadoPage implements OnInit {
   private readonly clienteService = inject(ClienteService);
+  private readonly geoCatalogService = inject(GeoCatalogService);
   private readonly router = inject(Router);
 
   protected readonly columnas = ['rut', 'nombre', 'tipoCliente', 'condicionPago', 'prioridadComercial', 'estado'];
@@ -44,8 +50,11 @@ export class ClientesListadoPage implements OnInit {
   protected readonly etiquetasTipo = ETIQUETAS_TIPO_CLIENTE;
   protected readonly opcionesEstado: EstadoCliente[] = ['ACTIVO', 'INACTIVO'];
 
-  protected readonly filtroComuna = new FormControl('');
+  protected readonly filtroComunaTexto = new FormControl('');
   protected readonly filtroEstado = new FormControl<EstadoCliente | ''>('');
+
+  protected readonly comunasSugeridas = signal<Comuna[]>([]);
+  protected readonly comunaSeleccionada = signal<Comuna | null>(null);
 
   protected readonly clientes = signal<Cliente[]>([]);
   protected readonly totalElementos = signal(0);
@@ -56,6 +65,24 @@ export class ClientesListadoPage implements OnInit {
 
   ngOnInit(): void {
     this.cargar();
+    this.filtroComunaTexto.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((texto) => {
+          this.comunaSeleccionada.set(null);
+          if (!texto || texto.trim().length < 2) {
+            return [];
+          }
+          return this.geoCatalogService.buscarComunasPorNombre(texto.trim());
+        })
+      )
+      .subscribe((comunas) => this.comunasSugeridas.set(comunas));
+  }
+
+  protected seleccionarComuna(comuna: Comuna): void {
+    this.comunaSeleccionada.set(comuna);
+    this.filtroComunaTexto.setValue(comuna.nombre, { emitEvent: false });
   }
 
   protected cambiarPagina(evento: PageEvent): void {
@@ -65,6 +92,9 @@ export class ClientesListadoPage implements OnInit {
   }
 
   protected aplicarFiltros(): void {
+    if (!this.filtroComunaTexto.value?.trim()) {
+      this.comunaSeleccionada.set(null);
+    }
     this.pagina.set(0);
     this.cargar();
   }
@@ -85,7 +115,7 @@ export class ClientesListadoPage implements OnInit {
     this.cargando.set(true);
     this.mensajeError.set(null);
     const estado = this.filtroEstado.value || undefined;
-    const comuna = this.filtroComuna.value?.trim() || undefined;
+    const comuna = this.comunaSeleccionada() ? String(this.comunaSeleccionada()!.codigo) : undefined;
     this.clienteService
       .listar({ comuna, estado, page: this.pagina(), size: this.tamanoPagina() })
       .subscribe({

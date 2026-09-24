@@ -1,11 +1,11 @@
 customer:
   service:
-    base-url: http://localhost:8081
+    base-url: http://localhost:9081
 
 geo:
   catalog:
     service:
-      base-url: http://localhost:8082
+      base-url: http://localhost:9082
 
 # Sin servidor embebido (CucumberSpringConfiguration usa webEnvironment = NONE):
 # este puerto nunca se usa, pero se fija explicitamente para evitar advertencias.

@@ -23,7 +23,7 @@ Start-Process -NoNewWindow -FilePath java -ArgumentList '-jar','target\geo-catal
 
 Ejecutar desde Eclipse:
 - Run Configuration apuntando a `cl.smartlogistic.geo.GeoCatalogServiceApplication`.
-- Program arguments: `--spring.profiles.active=local` (añadir `--server.port=18082` si 8082 está ocupado).
+- Program arguments: `--spring.profiles.active=local` (añadir `--server.port=18082` si 9082 está ocupado).
 
 Levantar la pila completa para E2E:
 - Usa `infra/docker-compose.yml` en la raíz del repositorio para levantar Postgres y RabbitMQ. Quita `--spring.profiles.active=local` para que la app use la configuración por defecto.

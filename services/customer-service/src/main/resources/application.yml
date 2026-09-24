@@ -31,7 +31,7 @@ spring:
       spec: maximumSize=500,expireAfterWrite=6h
 
 geo-catalog-service:
-  base-url: http://localhost:8082
+  base-url: http://localhost:9082
   connect-timeout: 2s
   read-timeout: 3s
 
@@ -56,7 +56,7 @@ resilience4j:
           - org.springframework.web.client.HttpServerErrorException
 
 server:
-  port: 8081
+  port: 9081
 
 smart-logistic:
   rabbitmq:

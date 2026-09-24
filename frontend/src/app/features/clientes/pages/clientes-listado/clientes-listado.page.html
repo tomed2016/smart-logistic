@@ -9,8 +9,20 @@
 
   <form class="filtros" (ngSubmit)="aplicarFiltros()">
     <mat-form-field appearance="outline" class="filtros__campo">
-      <mat-label>Código de comuna</mat-label>
-      <input matInput [formControl]="filtroComuna" placeholder="Ej: 13119" />
+      <mat-label>Comuna</mat-label>
+      <input
+        matInput
+        [formControl]="filtroComunaTexto"
+        [matAutocomplete]="autoComunaFiltro"
+        placeholder="Escriba para buscar"
+      />
+      <mat-autocomplete #autoComunaFiltro="matAutocomplete">
+        @for (comuna of comunasSugeridas(); track comuna.codigo) {
+          <mat-option [value]="comuna.nombre" (onSelectionChange)="seleccionarComuna(comuna)">
+            {{ comuna.nombre }}
+          </mat-option>
+        }
+      </mat-autocomplete>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="filtros__campo">

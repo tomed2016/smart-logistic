@@ -64,10 +64,10 @@ services:
       # la variable de entorno equivalente colapsa los guiones dentro de cada
       # segmento y usa "_" solo como separador de punto: GEOCATALOGSERVICE_BASEURL.
       # Un env var como GEO_CATALOG_SERVICE_BASE_URL NO se enlaza a esta propiedad.
-      GEOCATALOGSERVICE_BASEURL: http://geo-catalog-service:8082
+      GEOCATALOGSERVICE_BASEURL: http://geo-catalog-service:9082
       TZ: America/Santiago
     ports:
-      - "${CUSTOMER_SERVICE_PORT:-8081}:8081"
+      - "${CUSTOMER_SERVICE_PORT:-9081}:9081"
     depends_on:
       postgres:
         condition: service_healthy
@@ -86,12 +86,12 @@ services:
       SPRING_DATASOURCE_PASSWORD: geo_catalog_service
       TZ: America/Santiago
     ports:
-      - "${GEO_CATALOG_SERVICE_PORT:-8082}:8082"
+      - "${GEO_CATALOG_SERVICE_PORT:-9082}:9082"
     depends_on:
       postgres-geo:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail --silent http://localhost:8082/actuator/health | grep -q '\"status\":\"UP\"'"]
+      test: ["CMD-SHELL", "curl --fail --silent http://localhost:9082/actuator/health | grep -q '\"status\":\"UP\"'"]
       interval: 10s
       timeout: 5s
       retries: 12

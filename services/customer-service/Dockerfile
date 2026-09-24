@@ -18,5 +18,5 @@ WORKDIR /app
 RUN useradd --system --create-home appuser
 COPY --from=build /workspace/services/customer-service/target/customer-service.jar app.jar
 USER appuser
-EXPOSE 8081
+EXPOSE 9081
 ENTRYPOINT ["java", "-jar", "app.jar"]

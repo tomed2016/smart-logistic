@@ -26,7 +26,7 @@ Start-Process -NoNewWindow -FilePath java -ArgumentList '-jar','target\customer-
 Ejecutar desde Eclipse:
 - Crear una Run Configuration apuntando a `cl.smartlogistic.customer.CustomerServiceApplication`.
 - Program arguments: `--spring.profiles.active=local`
-- (Opcional) si el puerto 8081 está ocupado: `--server.port=18081`
+- (Opcional) si el puerto 9081 está ocupado: `--server.port=18081`
 
 Opcional: silenciar la WARNING de JDK21 sobre acceso nativo
 - Si ves este mensaje al arrancar: "A restricted method in java.lang.System has been called" (relacionado a Tomcat/tcnative), puedes arrancar la JVM con el siguiente flag para permitir el acceso nativo durante el desarrollo:

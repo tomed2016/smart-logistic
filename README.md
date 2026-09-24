@@ -28,7 +28,7 @@ Para reutilizar imagenes ya construidas:
 
 El stack usa puertos de host aislados (15432/15433/15672/25672/18081/18082)
 para no chocar con una instancia de desarrollo ya corriendo en los puertos por
-defecto (5432/5433/5672/15672/8081/8082); el script restaura las variables de
+defecto (5432/5433/5672/15672/9081/9082); el script restaura las variables de
 entorno originales al terminar, incluso si una aseveracion falla.
 
 ## Pruebas de aceptacion (Cucumber)
@@ -61,7 +61,7 @@ un explorador del catalogo geografico con verificador de dia habil.
 ### Desarrollo local
 
 Requiere Node.js 20+ y que `customer-service`/`geo-catalog-service` esten
-corriendo en `localhost:8081`/`localhost:8082` (ver seccion "Development
+corriendo en `localhost:9081`/`localhost:9082` (ver seccion "Development
 quickstart" mas abajo).
 
 ```powershell
@@ -120,12 +120,18 @@ Example (PowerShell):
 ```powershell
 cd C:\git\smart-logistic\services\customer-service
 mvn -DskipTests package
-Start-Process -NoNewWindow -FilePath java -ArgumentList '-jar','target\customer-service.jar','--spring.profiles.active=local','--server.port=18081' -PassThru
+Start-Process -NoNewWindow -FilePath java -ArgumentList '-jar','target\customer-service.jar','--spring.profiles.active=local' -PassThru
 
 cd C:\git\smart-logistic\services\geo-catalog-service
 mvn -DskipTests package
-Start-Process -NoNewWindow -FilePath java -ArgumentList '-jar','target\geo-catalog-service.jar','--spring.profiles.active=local','--server.port=18082' -PassThru
+Start-Process -NoNewWindow -FilePath java -ArgumentList '-jar','target\geo-catalog-service.jar','--spring.profiles.active=local' -PassThru
 ```
+
+> Con el perfil `local`, cada servicio ya escucha en su puerto por defecto
+> (`9081` customer-service, `9082` geo-catalog-service — ver
+> `application-local.yml`), que es lo que espera el frontend en desarrollo
+> (`frontend/src/environments/environment.ts`). Usa `--server.port=XXXX` solo
+> si necesitas evitar un conflicto de puertos.
 
 2) Full stack (integration / E2E)
 

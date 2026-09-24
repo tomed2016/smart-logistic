@@ -20,7 +20,7 @@ smart-logistic:
       - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 
 server:
-  port: 8082
+  port: 9082
 
 logging:
   level:
