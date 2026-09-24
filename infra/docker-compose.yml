@@ -12,7 +12,7 @@ services:
       POSTGRES_USER: customer_service
       POSTGRES_PASSWORD: customer_service
     ports:
-      - "5432:5432"
+      - "${CUSTOMER_POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -20,7 +20,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-
   postgres-geo:
     image: postgres:16-alpine
     environment:
@@ -28,7 +27,7 @@ services:
       POSTGRES_USER: geo_catalog_service
       POSTGRES_PASSWORD: geo_catalog_service
     ports:
-      - "5433:5432"
+      - "${GEO_POSTGRES_PORT:-5433}:5432"
     volumes:
       - postgres-geo-data:/var/lib/postgresql/data
     healthcheck:
@@ -40,8 +39,8 @@ services:
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 5s
@@ -60,10 +59,15 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASSWORD: guest
-      GEO_CATALOG_SERVICE_BASE_URL: http://geo-catalog-service:8082
+      # Nota de binding relajado de Spring Boot: para la propiedad kebab-case
+      # "geo-catalog-service.base-url" (prefijo con guiones + atributo con guion),
+      # la variable de entorno equivalente colapsa los guiones dentro de cada
+      # segmento y usa "_" solo como separador de punto: GEOCATALOGSERVICE_BASEURL.
+      # Un env var como GEO_CATALOG_SERVICE_BASE_URL NO se enlaza a esta propiedad.
+      GEOCATALOGSERVICE_BASEURL: http://geo-catalog-service:8082
       TZ: America/Santiago
     ports:
-      - "8081:8081"
+      - "${CUSTOMER_SERVICE_PORT:-8081}:8081"
     depends_on:
       postgres:
         condition: service_healthy
@@ -82,7 +86,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: geo_catalog_service
       TZ: America/Santiago
     ports:
-      - "8082:8082"
+      - "${GEO_CATALOG_SERVICE_PORT:-8082}:8082"
     depends_on:
       postgres-geo:
         condition: service_healthy

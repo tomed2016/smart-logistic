@@ -5,6 +5,7 @@ WORKDIR /workspace
 COPY pom.xml .
 COPY shared-kernel/pom.xml shared-kernel/pom.xml
 COPY services/customer-service/pom.xml services/customer-service/pom.xml
+COPY services/geo-catalog-service/pom.xml services/geo-catalog-service/pom.xml
 
 COPY shared-kernel/src shared-kernel/src
 COPY services/customer-service/src services/customer-service/src

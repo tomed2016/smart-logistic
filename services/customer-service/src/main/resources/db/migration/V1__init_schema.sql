@@ -4,7 +4,7 @@
 CREATE TABLE cliente (
     id                  UUID PRIMARY KEY,
     rut_numero          BIGINT NOT NULL,
-    rut_dv              CHAR(1) NOT NULL,
+    rut_dv              VARCHAR(1) NOT NULL,
     tipo_cliente        VARCHAR(20) NOT NULL,
     nombre              VARCHAR(200) NOT NULL,
     condicion_pago      VARCHAR(20) NOT NULL,

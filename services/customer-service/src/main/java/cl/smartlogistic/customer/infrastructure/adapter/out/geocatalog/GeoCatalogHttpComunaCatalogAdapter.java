@@ -49,8 +49,14 @@ public class GeoCatalogHttpComunaCatalogAdapter implements ComunaCatalogPort {
         this.geoCatalogRestClient = geoCatalogRestClient;
     }
 
+    // Nota: Spring Cache desenvuelve automaticamente los metodos que retornan
+    // Optional<T> (desde Spring 4.3): el valor evaluado por "unless" es el
+    // contenido desenvuelto (un Comuna) o null cuando el Optional esta vacio -
+    // nunca el propio Optional. Por eso la condicion solo compara contra null;
+    // usar "#result.isEmpty()" fallaria en tiempo de ejecucion (Comuna no tiene
+    // ese metodo) y de hecho lo hacia hasta este fix.
     @Override
-    @Cacheable(cacheNames = "comunas", unless = "#result == null || #result.isEmpty()")
+    @Cacheable(cacheNames = "comunas", unless = "#result == null")
     @CircuitBreaker(name = RESILIENCE_INSTANCE, fallbackMethod = "buscarPorCodigoFallback")
     @Retry(name = RESILIENCE_INSTANCE)
     public Optional<Comuna> buscarPorCodigo(String codigo) {

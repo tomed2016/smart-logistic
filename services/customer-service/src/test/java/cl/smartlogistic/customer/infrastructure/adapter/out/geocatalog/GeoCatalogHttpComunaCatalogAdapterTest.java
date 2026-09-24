@@ -3,8 +3,15 @@ package cl.smartlogistic.customer.infrastructure.adapter.out.geocatalog;
 import cl.smartlogistic.customer.domain.exception.ComunaCatalogNoDisponibleException;
 import cl.smartlogistic.customer.domain.model.Comuna;
 import cl.smartlogistic.customer.domain.model.Region;
+import cl.smartlogistic.customer.domain.port.out.ComunaCatalogPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpServerErrorException;
@@ -13,6 +20,7 @@ import org.springframework.web.client.RestClient;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -115,5 +123,56 @@ class GeoCatalogHttpComunaCatalogAdapterTest {
                 .isInstanceOf(ComunaCatalogNoDisponibleException.class)
                 .hasMessageContaining("13119")
                 .hasCause(causaOriginal);
+    }
+
+    /**
+     * Configuracion minima que activa el proxy AOP real de {@code @Cacheable} (via
+     * {@code @EnableCaching}), a diferencia de los demas tests de esta clase que
+     * instancian el adaptador "a pelo" y por lo tanto NUNCA evaluan la expresion SpEL
+     * de {@code unless}. Este test existe especificamente para prevenir la regresion
+     * detectada durante el smoke test de Docker Compose (ver ADR 05): la expresion
+     * {@code unless = "#result == null || #result.isEmpty()"} lanzaba
+     * {@code SpelEvaluationException} en cada invocacion real, porque Spring Cache
+     * desenvuelve los metodos que retornan {@link Optional} antes de evaluar
+     * "unless" — el {@code #result} visible en la expresion es el {@link Comuna}
+     * contenido (o {@code null}), nunca el {@code Optional} en si.
+     */
+    @Configuration
+    @EnableCaching
+    static class ConfiguracionCacheParaPrueba {
+
+        @Bean
+        CacheManager cacheManager() {
+            return new ConcurrentMapCacheManager("comunas");
+        }
+
+        @Bean
+        GeoCatalogHttpComunaCatalogAdapter geoCatalogHttpComunaCatalogAdapter(RestClient restClient) {
+            return new GeoCatalogHttpComunaCatalogAdapter(restClient);
+        }
+    }
+
+    @Test
+    @DisplayName("La condicion 'unless' del cache no falla al evaluar un resultado presente (regresion Optional)")
+    void unlessDelCacheNoFallaConResultadoPresente() {
+        RestClient.Builder builder = RestClient.builder().baseUrl(BASE_URL);
+        MockRestServiceServer servidorProxy = MockRestServiceServer.bindTo(builder).build();
+        servidorProxy.expect(requestTo(BASE_URL + "/api/v1/comunas/13119"))
+                .andRespond(withSuccess(
+                        """
+                        {"codigo": 13119, "nombre": "Maipú", "provinciaCodigo": 131, "regionCodigo": 13}
+                        """,
+                        MediaType.APPLICATION_JSON));
+
+        try (AnnotationConfigApplicationContext contexto = new AnnotationConfigApplicationContext()) {
+            contexto.registerBean(RestClient.class, () -> builder.build());
+            contexto.register(ConfiguracionCacheParaPrueba.class);
+            contexto.refresh();
+
+            ComunaCatalogPort portConProxyDeCache = contexto.getBean(ComunaCatalogPort.class);
+
+            assertThatCode(() -> portConProxyDeCache.buscarPorCodigo("13119")).doesNotThrowAnyException();
+            assertThat(portConProxyDeCache.buscarPorCodigo("13119")).isPresent();
+        }
     }
 }
