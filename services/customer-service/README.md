@@ -28,6 +28,21 @@ Ejecutar desde Eclipse:
 - Program arguments: `--spring.profiles.active=local`
 - (Opcional) si el puerto 8081 está ocupado: `--server.port=18081`
 
+Opcional: silenciar la WARNING de JDK21 sobre acceso nativo
+- Si ves este mensaje al arrancar: "A restricted method in java.lang.System has been called" (relacionado a Tomcat/tcnative), puedes arrancar la JVM con el siguiente flag para permitir el acceso nativo durante el desarrollo:
+
+PowerShell (ejecutando el JAR):
+```
+java --enable-native-access=ALL-UNNAMED -jar target\customer-service.jar --spring.profiles.active=local
+```
+
+Con Maven (spring-boot:run) el plugin ya está configurado en el POM para añadir el flag automáticamente; si prefieres pasar el flag manualmente:
+```
+mvn -Dspring-boot.run.jvmArguments="--enable-native-access=ALL-UNNAMED" spring-boot:run
+```
+
+También se incluye un script conveniente en `scripts\run-local.ps1` que construye y arranca el servicio con la opción adecuada.
+
 Comprobar health:
 ```
 Invoke-WebRequest -UseBasicParsing http://localhost:18081/actuator/health

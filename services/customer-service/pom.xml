@@ -126,6 +126,10 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
+                <configuration>
+                    <!-- Agrega argumentos JVM para `spring-boot:run` en desarrollo -->
+                    <jvmArguments>--enable-native-access=ALL-UNNAMED</jvmArguments>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
