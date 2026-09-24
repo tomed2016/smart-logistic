@@ -1,0 +1,55 @@
+version: "3.9"
+
+# Stack local para validar el bounded context Clientes end-to-end:
+# Postgres (persistencia), RabbitMQ (mensajeria de dominio) y customer-service.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: customer_service
+      POSTGRES_USER: customer_service
+      POSTGRES_PASSWORD: customer_service
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U customer_service -d customer_service"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  customer-service:
+    build:
+      context: ..
+      dockerfile: services/customer-service/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/customer_service
+      SPRING_DATASOURCE_USERNAME: customer_service
+      SPRING_DATASOURCE_PASSWORD: customer_service
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      TZ: America/Santiago
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
