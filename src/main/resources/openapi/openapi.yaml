@@ -1,0 +1,25 @@
+openapi: 3.0.3
+info:
+  title: Smart Logistic Bootstrap API
+  version: 0.0.1
+  description: API inicial del bootstrap arquitectónico de Smart Logistic.
+paths:
+  /api/v1/platform/info:
+    get:
+      summary: Obtener metadatos operativos iniciales
+      responses:
+        '200':
+          description: Información de plataforma
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  system:
+                    type: string
+                  timezone:
+                    type: string
+                  currency:
+                    type: string
+                  recommendedArchitecture:
+                    type: string
