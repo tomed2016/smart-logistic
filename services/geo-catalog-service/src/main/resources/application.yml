@@ -2,7 +2,11 @@ spring:
   application:
     name: geo-catalog-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/geo_catalog_service
+    # When running the local infra with docker-compose the geo postgres is
+    # published on host port 5433 (see infra/docker-compose.yml). Use 5433
+    # as the default for local development so the service can connect to the
+    # database started by docker-compose without changing environment vars.
+    url: jdbc:postgresql://localhost:5433/geo_catalog_service
     username: geo_catalog_service
     password: geo_catalog_service
   jpa:
