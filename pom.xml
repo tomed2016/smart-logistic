@@ -15,6 +15,7 @@
     <modules>
         <module>shared-kernel</module>
         <module>services/customer-service</module>
+        <module>services/geo-catalog-service</module>
     </modules>
 
     <properties>

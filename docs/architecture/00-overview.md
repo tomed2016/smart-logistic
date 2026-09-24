@@ -38,10 +38,13 @@ REST versionadas (`/api/v1/...`).
   ni como clave foránea entre servicios.
 
 ## 5. Orden de implementación (roadmap iterativo)
-1. **Iteración 1 (actual)**: `shared-kernel` (VOs comunes) + microservicio **Clientes**.
-2. Iteración 2: Catálogo Geográfico CL (regiones/provincias/comunas/feriados) como
-   servicio de referencia + librería de calendario hábil `America/Santiago`.
-3. Iteración 3: Productos e Inventario.
+1. **Iteración 1 (completa)**: `shared-kernel` (VOs comunes) + microservicio **Clientes**.
+2. **Iteración 2 (completa)**: Catálogo Geográfico CL (regiones/provincias/comunas/
+   feriados) como servicio de referencia (`geo-catalog-service`) + librería de
+   calendario hábil `America/Santiago` (`CalendarioChileno` en `shared-kernel`). Ver
+   `04-bounded-context-catalogo-geografico.md` para el detalle y las decisiones
+   diferidas (integración con Clientes, regla Ley 20.983).
+3. **Iteración 3 (siguiente)**: Productos e Inventario.
 4. Iteración 4: Pedidos (estados, auditoría, historial inmutable).
 5. Iteración 5: Recurrencias (contratos de suministro).
 6. Iteración 6: Reprogramación (pedidos, entregas, ocurrencias).

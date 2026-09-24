@@ -1,7 +1,9 @@
 version: "3.9"
 
-# Stack local para validar el bounded context Clientes end-to-end:
-# Postgres (persistencia), RabbitMQ (mensajeria de dominio) y customer-service.
+# Stack local para validar los bounded contexts Clientes y Catalogo Geografico end-to-end.
+# Cada servicio tiene su propia base de datos (un esquema por microservicio, sin acoplamiento
+# a nivel de datos). geo-catalog-service no requiere RabbitMQ: es un servicio de referencia
+# de solo lectura, sin eventos de dominio que publicar.
 services:
   postgres:
     image: postgres:16-alpine
@@ -15,6 +17,22 @@ services:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U customer_service -d customer_service"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  postgres-geo:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: geo_catalog_service
+      POSTGRES_USER: geo_catalog_service
+      POSTGRES_PASSWORD: geo_catalog_service
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-geo-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U geo_catalog_service -d geo_catalog_service"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -51,5 +69,21 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  geo-catalog-service:
+    build:
+      context: ..
+      dockerfile: services/geo-catalog-service/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-geo:5432/geo_catalog_service
+      SPRING_DATASOURCE_USERNAME: geo_catalog_service
+      SPRING_DATASOURCE_PASSWORD: geo_catalog_service
+      TZ: America/Santiago
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres-geo:
+        condition: service_healthy
+
 volumes:
   postgres-data:
+  postgres-geo-data:

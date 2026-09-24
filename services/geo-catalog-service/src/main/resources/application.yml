@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: geo-catalog-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/geo_catalog_service
+    username: geo_catalog_service
+    password: geo_catalog_service
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: 8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    cl.smartlogistic: INFO
