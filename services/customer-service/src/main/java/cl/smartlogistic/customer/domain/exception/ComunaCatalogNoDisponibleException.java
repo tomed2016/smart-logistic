@@ -13,7 +13,11 @@ package cl.smartlogistic.customer.domain.exception;
  * incorrectamente direcciones validas solo porque el catalogo geografico esta caido.</p>
  */
 public final class ComunaCatalogNoDisponibleException extends RuntimeException {
-    private static final String MESSAGE = "El catalogo geografico no esta disponible actualmente; no fue posible verificar el codigo de comuna '%s'. Intente nuevamente en unos momentos.";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7920848462027210073L;
+	private static final String MESSAGE = "El catalogo geografico no esta disponible actualmente; no fue posible verificar el codigo de comuna '%s'. Intente nuevamente en unos momentos.";
 
     public ComunaCatalogNoDisponibleException(String codigoComuna, Throwable causa) {
         super(String.format(MESSAGE, codigoComuna), causa);

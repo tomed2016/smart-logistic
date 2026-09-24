@@ -7,7 +7,12 @@ import cl.smartlogistic.shared.exception.DomainException;
  * un correo de contacto.
  */
 public final class ClienteSinContactoException extends DomainException {
-    public ClienteSinContactoException() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public ClienteSinContactoException() {
         super("Un cliente activo debe tener al menos un telefono o un correo de contacto");
     }
 }

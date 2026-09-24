@@ -7,7 +7,11 @@ import java.util.UUID;
 /** Identificador tecnico interno de una {@link Direccion}. */
 public final class DireccionId implements Serializable {
 
-    private final UUID value;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private final UUID value;
 
     private DireccionId(UUID value) {
         this.value = value;

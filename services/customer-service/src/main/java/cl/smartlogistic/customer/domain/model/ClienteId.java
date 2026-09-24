@@ -11,7 +11,11 @@ import java.util.UUID;
  */
 public final class ClienteId implements Serializable {
 
-    private final UUID value;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private final UUID value;
 
     private ClienteId(UUID value) {
         this.value = value;
