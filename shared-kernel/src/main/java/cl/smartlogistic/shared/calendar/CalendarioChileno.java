@@ -41,6 +41,7 @@ import java.util.TreeSet;
 public final class CalendarioChileno {
 
     private final Set<LocalDate> feriadosAdHoc;
+    private static final String AD_HOC_NAME = "Feriado ad-hoc (ley puntual)";
 
     /** Calendario sin feriados ad-hoc adicionales (solo los legales permanentes). */
     public CalendarioChileno() {
@@ -86,7 +87,7 @@ public final class CalendarioChileno {
 
         for (LocalDate fecha : feriadosAdHoc) {
             if (fecha.getYear() == anio) {
-                feriados.add(new Feriado(fecha, "Feriado ad-hoc (ley puntual)", TipoFeriado.AD_HOC));
+                    feriados.add(new Feriado(fecha, AD_HOC_NAME, TipoFeriado.AD_HOC));
             }
         }
 

@@ -10,11 +10,16 @@ import java.util.Objects;
 public record Feriado(LocalDate fecha, String nombre, TipoFeriado tipo) {
 
     public Feriado {
-        Objects.requireNonNull(fecha, "fecha de feriado no puede ser nula");
-        Objects.requireNonNull(nombre, "nombre de feriado no puede ser nulo");
-        Objects.requireNonNull(tipo, "tipo de feriado no puede ser nulo");
+        final String FECHA_NULA = "fecha de feriado no puede ser nula";
+        final String NOMBRE_NULO = "nombre de feriado no puede ser nulo";
+        final String TIPO_NULO = "tipo de feriado no puede ser nulo";
+        final String NOMBRE_BLANK = "nombre de feriado no puede estar en blanco";
+
+        Objects.requireNonNull(fecha, FECHA_NULA);
+        Objects.requireNonNull(nombre, NOMBRE_NULO);
+        Objects.requireNonNull(tipo, TIPO_NULO);
         if (nombre.isBlank()) {
-            throw new IllegalArgumentException("nombre de feriado no puede estar en blanco");
+            throw new IllegalArgumentException(NOMBRE_BLANK);
         }
     }
 }

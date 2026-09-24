@@ -18,6 +18,8 @@ public final class Money implements Serializable, Comparable<Money> {
     public static final String CLP = "CLP";
 
     private static final Money ZERO = new Money(0L);
+    private static final long serialVersionUID = 2026092403L;
+    private static final String NEGATIVE_AMOUNT_MESSAGE_TEMPLATE = "El monto no puede ser negativo: %d. Use allowNegative() si corresponde.";
 
     private final long montoEnPesos;
 
@@ -32,8 +34,7 @@ public final class Money implements Serializable, Comparable<Money> {
     /** Crea un monto no-negativo en pesos chilenos. */
     public static Money of(long montoEnPesos) {
         if (montoEnPesos < 0) {
-            throw new IllegalArgumentException(
-                    "El monto no puede ser negativo: " + montoEnPesos + ". Use allowNegative() si corresponde.");
+            throw new IllegalArgumentException(String.format(NEGATIVE_AMOUNT_MESSAGE_TEMPLATE, montoEnPesos));
         }
         return new Money(montoEnPesos);
     }

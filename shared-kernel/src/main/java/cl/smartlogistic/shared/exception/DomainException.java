@@ -8,7 +8,10 @@ package cl.smartlogistic.shared.exception;
  */
 public abstract class DomainException extends RuntimeException {
 
-    protected DomainException(String message) {
+    /** Generated serialVersionUID to make serialization explicit and avoid Sonar warnings. */
+    private static final long serialVersionUID = 2026092401L;
+
+	protected DomainException(String message) {
         super(message);
     }
 

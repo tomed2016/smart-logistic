@@ -13,6 +13,9 @@ import java.util.Objects;
  */
 public final class AuditInfo {
 
+    private static final String USER_NOT_NULL = "usuario no puede ser nulo";
+    private static final String INSTANT_NOT_NULL = "instante no puede ser nulo";
+
     private final Instant creadoEn;
     private final String creadoPor;
     private final Instant actualizadoEn;
@@ -26,14 +29,14 @@ public final class AuditInfo {
     }
 
     public static AuditInfo crear(String usuario, Instant instante) {
-        Objects.requireNonNull(usuario, "usuario no puede ser nulo");
-        Objects.requireNonNull(instante, "instante no puede ser nulo");
+        Objects.requireNonNull(usuario, USER_NOT_NULL);
+        Objects.requireNonNull(instante, INSTANT_NOT_NULL);
         return new AuditInfo(instante, usuario, instante, usuario);
     }
 
     public AuditInfo actualizar(String usuario, Instant instante) {
-        Objects.requireNonNull(usuario, "usuario no puede ser nulo");
-        Objects.requireNonNull(instante, "instante no puede ser nulo");
+        Objects.requireNonNull(usuario, USER_NOT_NULL);
+        Objects.requireNonNull(instante, INSTANT_NOT_NULL);
         return new AuditInfo(this.creadoEn, this.creadoPor, instante, usuario);
     }
 

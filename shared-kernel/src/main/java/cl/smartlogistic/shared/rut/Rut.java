@@ -21,6 +21,12 @@ public final class Rut implements Serializable, Comparable<Rut> {
 
     private static final Pattern CARACTERES_A_LIMPIAR = Pattern.compile("[.\\-\\s]");
     private static final Pattern CUERPO_NUMERICO = Pattern.compile("^\\d{7,8}$");
+    private static final long serialVersionUID = 2026092402L;
+
+    private static final String NULL_MESSAGE = "El RUT no puede ser nulo";
+    private static final String LENGTH_MESSAGE = "se esperan 7 u 8 digitos en el cuerpo mas 1 digito verificador";
+    private static final String NUMERIC_BODY_MESSAGE = "el cuerpo del RUT debe contener solo digitos";
+    private static final String DV_INCORRECT_TEMPLATE = "digito verificador incorrecto, se esperaba '%s'";
 
     private final long numero;
     private final char digitoVerificador;
@@ -38,23 +44,21 @@ public final class Rut implements Serializable, Comparable<Rut> {
      *                              verificador no corresponde.
      */
     public static Rut of(String rutTexto) {
-        Objects.requireNonNull(rutTexto, "El RUT no puede ser nulo");
+        Objects.requireNonNull(rutTexto, NULL_MESSAGE);
         String limpio = CARACTERES_A_LIMPIAR.matcher(rutTexto.trim().toUpperCase()).replaceAll("");
         if (limpio.length() < 8 || limpio.length() > 9) {
-            throw new InvalidRutException(rutTexto,
-                    "se esperan 7 u 8 digitos en el cuerpo mas 1 digito verificador");
+            throw new InvalidRutException(rutTexto, LENGTH_MESSAGE);
         }
         String cuerpo = limpio.substring(0, limpio.length() - 1);
         char digitoVerificadorIngresado = limpio.charAt(limpio.length() - 1);
         if (!CUERPO_NUMERICO.matcher(cuerpo).matches()) {
-            throw new InvalidRutException(rutTexto, "el cuerpo del RUT debe contener solo digitos");
+            throw new InvalidRutException(rutTexto, NUMERIC_BODY_MESSAGE);
         }
 
         long numero = Long.parseLong(cuerpo);
         char digitoVerificadorEsperado = calcularDigitoVerificador(numero);
         if (digitoVerificadorIngresado != digitoVerificadorEsperado) {
-            throw new InvalidRutException(rutTexto,
-                    "digito verificador incorrecto, se esperaba '" + digitoVerificadorEsperado + "'");
+            throw new InvalidRutException(rutTexto, String.format(DV_INCORRECT_TEMPLATE, digitoVerificadorEsperado));
         }
         return new Rut(numero, digitoVerificadorIngresado);
     }
