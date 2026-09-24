@@ -2,6 +2,7 @@ package cl.smartlogistic.customer.infrastructure.adapter.in.rest;
 
 import cl.smartlogistic.customer.domain.exception.ClienteNoEncontradoException;
 import cl.smartlogistic.customer.domain.exception.ClienteSinContactoException;
+import cl.smartlogistic.customer.domain.exception.ComunaCatalogNoDisponibleException;
 import cl.smartlogistic.customer.domain.exception.ComunaDesconocidaException;
 import cl.smartlogistic.customer.domain.exception.DireccionNoEncontradaException;
 import cl.smartlogistic.customer.domain.exception.RutDuplicadoException;
@@ -38,6 +39,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({ClienteSinContactoException.class, ComunaDesconocidaException.class})
     public ResponseEntity<Map<String, Object>> manejarSolicitudInvalida(DomainException ex) {
         return construir(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(ComunaCatalogNoDisponibleException.class)
+    public ResponseEntity<Map<String, Object>> manejarCatalogoNoDisponible(ComunaCatalogNoDisponibleException ex) {
+        return construir(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

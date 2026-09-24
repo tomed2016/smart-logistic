@@ -34,4 +34,38 @@ public enum Region {
     public String nombreOficial() {
         return nombreOficial;
     }
+
+    /**
+     * Resuelve el {@link Region} correspondiente a un codigo oficial de region INE
+     * (1-16). Puente explicito hacia el catalogo geografico compartido
+     * (geo-catalog-service), cuyo modelo de dominio identifica las regiones por este
+     * codigo numerico en vez de por este enum cerrado. Ver
+     * docs/architecture/05-integracion-clientes-catalogo-geografico.md para el
+     * razonamiento de por que ambas representaciones coexisten en esta iteracion.
+     *
+     * @throws IllegalArgumentException si el codigo no corresponde a ninguna de las
+     *                                   16 regiones oficiales.
+     */
+    public static Region porCodigoIne(int codigoIne) {
+        return switch (codigoIne) {
+            case 1 -> TARAPACA;
+            case 2 -> ANTOFAGASTA;
+            case 3 -> ATACAMA;
+            case 4 -> COQUIMBO;
+            case 5 -> VALPARAISO;
+            case 6 -> LIBERTADOR_GENERAL_BERNARDO_OHIGGINS;
+            case 7 -> MAULE;
+            case 8 -> BIOBIO;
+            case 9 -> LA_ARAUCANIA;
+            case 10 -> LOS_LAGOS;
+            case 11 -> AYSEN_DEL_GENERAL_CARLOS_IBANEZ_DEL_CAMPO;
+            case 12 -> MAGALLANES_Y_ANTARTICA_CHILENA;
+            case 13 -> METROPOLITANA_DE_SANTIAGO;
+            case 14 -> LOS_RIOS;
+            case 15 -> ARICA_Y_PARINACOTA;
+            case 16 -> NUBLE;
+            default -> throw new IllegalArgumentException(
+                    "Codigo de region INE invalido, se esperaba un valor entre 1 y 16: " + codigoIne);
+        };
+    }
 }

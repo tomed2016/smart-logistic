@@ -3,6 +3,7 @@ package cl.smartlogistic.customer.infrastructure.adapter.out.persistence;
 import cl.smartlogistic.customer.domain.model.Comuna;
 import cl.smartlogistic.customer.domain.model.Region;
 import cl.smartlogistic.customer.domain.port.out.ComunaCatalogPort;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -16,10 +17,25 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Adaptador de {@link ComunaCatalogPort} que carga un catalogo geografico embebido
- * (CSV en el classpath) a memoria al iniciar el servicio. Ver limitaciones de
- * alcance documentadas en {@link Comuna}.
+ * (CSV en el classpath) a memoria al iniciar el servicio.
+ *
+ * <p><b>Solo activo bajo el perfil {@code local}</b> (desarrollo/pruebas manuales sin
+ * un geo-catalog-service en ejecucion). En el resto de los perfiles, el adaptador
+ * real es
+ * {@code cl.smartlogistic.customer.infrastructure.adapter.out.geocatalog.GeoCatalogHttpComunaCatalogAdapter},
+ * que consulta el catalogo oficial de 346 comunas. Ver
+ * docs/architecture/05-integracion-clientes-catalogo-geografico.md.</p>
+ *
+ * <p><b>Advertencia de compatibilidad</b>: los codigos de este catalogo embebido son
+ * slugs internos (ej. {@code PUENTE_ALTO}), <u>no</u> codigos oficiales INE. Una
+ * direccion creada bajo el perfil {@code local} con un codigo de este catalogo no
+ * sera resoluble si luego se consulta bajo otro perfil contra geo-catalog-service (y
+ * viceversa). Esto es aceptable porque {@code local} es exclusivamente un modo de
+ * desarrollo desconectado, nunca un entorno con datos que deban persistir entre
+ * perfiles.</p>
  */
 @Component
+@Profile("local")
 public class InMemoryComunaCatalogAdapter implements ComunaCatalogPort {
 
     private static final String RECURSO_CSV = "catalogo/comunas-chile.csv";

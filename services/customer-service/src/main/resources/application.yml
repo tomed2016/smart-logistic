@@ -21,6 +21,39 @@ spring:
     port: 5672
     username: guest
     password: guest
+  cache:
+    cache-names: comunas
+    caffeine:
+      # El catalogo geografico cambia solo via despliegue (migracion Flyway) del
+      # servicio productor, nunca en caliente; una expiracion de 6h es un balance
+      # conservador entre frescura y reduccion de latencia/carga sobre
+      # geo-catalog-service.
+      spec: maximumSize=500,expireAfterWrite=6h
+
+geo-catalog-service:
+  base-url: http://localhost:8082
+  connect-timeout: 2s
+  read-timeout: 3s
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      geoCatalogService:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+  retry:
+    instances:
+      geoCatalogService:
+        max-attempts: 3
+        wait-duration: 200ms
+        retry-exceptions:
+          - org.springframework.web.client.ResourceAccessException
+          - org.springframework.web.client.HttpServerErrorException
 
 server:
   port: 8081
