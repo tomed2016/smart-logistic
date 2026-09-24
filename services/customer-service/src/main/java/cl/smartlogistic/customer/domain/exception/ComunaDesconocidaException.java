@@ -4,7 +4,9 @@ import cl.smartlogistic.shared.exception.DomainException;
 
 /** Se lanza cuando se referencia un codigo de comuna que no existe en el catalogo. */
 public final class ComunaDesconocidaException extends DomainException {
+    private static final String MESSAGE = "La comuna con codigo '%s' no existe en el catalogo geografico";
+
     public ComunaDesconocidaException(String codigoComuna) {
-        super("La comuna con codigo '%s' no existe en el catalogo geografico".formatted(codigoComuna));
+        super(String.format(MESSAGE, codigoComuna));
     }
 }

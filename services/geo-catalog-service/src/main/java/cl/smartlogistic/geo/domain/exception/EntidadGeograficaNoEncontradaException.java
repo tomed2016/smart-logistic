@@ -5,8 +5,9 @@ package cl.smartlogistic.geo.domain.exception;
  * existe en el catalogo oficial cargado.
  */
 public class EntidadGeograficaNoEncontradaException extends RuntimeException {
+    private static final String MESSAGE = "%s con codigo %d no encontrada en el catalogo";
 
     public EntidadGeograficaNoEncontradaException(String tipo, int codigo) {
-        super("%s con codigo %d no encontrada en el catalogo".formatted(tipo, codigo));
+        super(String.format(MESSAGE, tipo, codigo));
     }
 }
