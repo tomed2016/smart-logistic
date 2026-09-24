@@ -3,6 +3,7 @@ package cl.smartlogistic.customer.infrastructure.adapter.out.messaging;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * idempotentes usando {@code eventId} (ver payload) para deduplicar.
  */
 @Component
+@ConditionalOnProperty(prefix = "smart-logistic.outbox", name = "enabled", havingValue = "true", matchIfMissing = true)
 class OutboxDispatcher {
 
     private final OutboxEventJpaRepository outboxEventJpaRepository;

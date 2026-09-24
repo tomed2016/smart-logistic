@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:geo_catalog_service;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  flyway:
+    enabled: false
+
+smart-logistic:
+  outbox:
+    enabled: false
+
+# Disable Rabbit autoconfig not required by this service, but keep symmetry with other services
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+server:
+  port: 8082
+
+logging:
+  level:
+    cl.smartlogistic: INFO
+
+# Disable Rabbit health check in local profile (no Rabbit broker)
+management:
+  health:
+    rabbit:
+      enabled: false
