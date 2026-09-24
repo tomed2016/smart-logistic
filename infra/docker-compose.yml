@@ -1,5 +1,3 @@
-version: "3.9"
-
 # Stack local para validar los bounded contexts Clientes y Catalogo Geografico end-to-end.
 # Cada servicio tiene su propia base de datos (un esquema por microservicio, sin acoplamiento
 # a nivel de datos). geo-catalog-service no requiere RabbitMQ: es un servicio de referencia

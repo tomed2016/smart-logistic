@@ -1,12 +1,30 @@
 package cl.smartlogistic.customer.infrastructure.adapter.in.rest;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.Instant;
+import java.util.List;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
 import cl.smartlogistic.customer.domain.exception.ClienteNoEncontradoException;
 import cl.smartlogistic.customer.domain.exception.RutDuplicadoException;
 import cl.smartlogistic.customer.domain.model.Cliente;
 import cl.smartlogistic.customer.domain.model.ClienteId;
 import cl.smartlogistic.customer.domain.model.CondicionPago;
 import cl.smartlogistic.customer.domain.model.Correo;
-import cl.smartlogistic.customer.domain.model.DireccionId;
 import cl.smartlogistic.customer.domain.model.PrioridadComercial;
 import cl.smartlogistic.customer.domain.model.Telefono;
 import cl.smartlogistic.customer.domain.model.TipoCliente;
@@ -18,25 +36,6 @@ import cl.smartlogistic.customer.domain.port.in.CrearClienteUseCase;
 import cl.smartlogistic.customer.domain.port.in.DesactivarClienteUseCase;
 import cl.smartlogistic.customer.domain.port.out.ClienteRepository;
 import cl.smartlogistic.shared.rut.Rut;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ClienteController.class)
 class ClienteControllerTest {
