@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>cl.smartlogistic</groupId>
+        <artifactId>smart-logistic</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>qa-automation</artifactId>
+    <packaging>jar</packaging>
+
+    <name>QA Automation - Pruebas de Aceptacion BDD</name>
+    <description>
+        Suite de pruebas de aceptacion (Cucumber/Gherkin) que ejercita el comportamiento
+        de negocio de la plataforma a traves de las APIs REST reales de customer-service
+        y geo-catalog-service. Es deliberadamente un modulo standalone, NO listado en
+        &lt;modules&gt; del pom.xml raiz: requiere el stack de infra/docker-compose.yml
+        en ejecucion, por lo que nunca debe dispararse implicitamente por `mvn test`
+        o `mvn install` desde la raiz del reactor (ver README.md de este modulo y
+        docs/architecture/06-estrategia-de-pruebas.md).
+    </description>
+
+    <properties>
+        <!-- Este modulo solo tiene src/test: no hay codigo de produccion que compilar. -->
+        <maven.main.skip>true</maven.main.skip>
+        <cucumber.version>7.20.1</cucumber.version>
+        <!-- La version de junit-platform-suite la gestiona el BOM junit heredado
+             transitivamente via spring-boot-dependencies (import en el pom raiz). -->
+        <!--
+            URLs base de los servicios bajo prueba. Por defecto apuntan al stack
+            levantado por infra/docker-compose.yml. Sobrescribibles con
+            -Dcustomer.service.base-url=... / -Dgeo.catalog.service.base-url=...
+            (por ejemplo para apuntar al stack aislado del smoke test).
+        -->
+        <customer.service.base-url>http://localhost:8081</customer.service.base-url>
+        <geo.catalog.service.base-url>http://localhost:8082</geo.catalog.service.base-url>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-bom</artifactId>
+                <version>${cucumber.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!--
+            Reutiliza el Value Object Rut (algoritmo oficial de digito verificador del
+            SII) para generar RUTs de prueba validos y unicos por escenario, en vez de
+            reimplementar o hardcodear el algoritmo en este modulo.
+        -->
+        <dependency>
+            <groupId>cl.smartlogistic</groupId>
+            <artifactId>shared-kernel</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-spring</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>qa-automation</finalName>
+        <plugins>
+            <!--
+                Sin objetivo de test unitario en este modulo: se desactiva surefire (fase
+                `test`) y se ejecuta Cucumber exclusivamente via failsafe en la fase
+                `integration-test`, igual que las pruebas *IT de los demas modulos. Esto
+                mantiene el invariante del proyecto: `mvn test` en la raiz nunca requiere
+                Docker ni servicios externos en ejecucion.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/RunCucumberIT.java</include>
+                    </includes>
+                    <!--
+                        Las URLs base se parametrizan por variable de entorno (ver
+                        README.md) para poder apuntar tanto al stack por defecto de
+                        docker-compose.yml como al stack aislado del smoke test.
+                    -->
+                    <systemPropertyVariables>
+                        <customer.service.base-url>${customer.service.base-url}</customer.service.base-url>
+                        <geo.catalog.service.base-url>${geo.catalog.service.base-url}</geo.catalog.service.base-url>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
